@@ -363,7 +363,226 @@ export const PasswordPitfallMatcher: React.FC<PasswordPitfallMatcherProps> = ({ 
 };
 
 
-// --- Activity 4: Password Strength Quiz ---
+// --- Activity 5: Phishing Simulator ---
+
+const phishingScenarios = [
+  {
+    id: 1,
+    type: 'email',
+    sender: 'apoio.cliente@cxd-secure-banking.com',
+    subject: 'ALERTA DE SEGURANÇA: Conta Bloqueada',
+    content: 'Prezado cliente, detetámos um acesso não autorizado à sua conta. Por motivos de segurança, a sua conta foi bloqueada temporariamente. Para reativar o acesso, clique no botão abaixo e confirme os seus dados de login em menos de 24 horas.',
+    buttonText: 'Reativar Conta Agora',
+    isPhishing: true,
+    redFlags: [
+      'Domínio do remetente suspeito (cxd-secure-banking.com em vez de o site oficial do banco).',
+      'Tom de urgência e ameaça (bloqueio em 24 horas).',
+      'Saudação genérica ("Prezado cliente").',
+      'Pedido para inserir dados de login através de um link externo.'
+    ],
+    explanation: 'Bancos nunca pedem para reativar contas através de links por e-mail. O domínio também não corresponde ao oficial.'
+  },
+  {
+    id: 2,
+    type: 'email',
+    sender: 'no-reply@accounts.google.com',
+    subject: 'Alerta de segurança: Novo início de sessão',
+    content: 'Alguém acabou de iniciar sessão na sua conta Google a partir de um novo dispositivo (Windows, Chrome). Se foi você, ignore este e-mail. Se não foi você, consulte a atividade da sua conta.',
+    buttonText: 'Verificar Atividade',
+    isPhishing: false,
+    redFlags: [],
+    explanation: 'Este é um e-mail legítimo da Google. O remetente é oficial, não pede dados diretamente e apenas sugere que verifiques a atividade se não reconheceres o acesso.'
+  },
+  {
+    id: 3,
+    type: 'sms',
+    sender: '+351 910 000 000',
+    subject: 'SMS',
+    content: 'AUTORIDADE TRIBUTARIA: Tem um reembolso de 425,50€ pendente. Aceda a https://reembolso-at-gov.short.link para receber o valor.',
+    buttonText: 'Aceder',
+    isPhishing: true,
+    redFlags: [
+      'Uso de encurtadores de links (short.link) para ocultar o destino real.',
+      'Promessa de dinheiro fácil e imediato.',
+      'O link não pertence ao domínio oficial das Finanças (.gov.pt).'
+    ],
+    explanation: 'As autoridades nunca pedem dados para reembolsos via SMS com links diretos, muito menos links encurtadores.'
+  },
+  {
+    id: 4,
+    type: 'email',
+    sender: 'netflix.billing@gmail.com',
+    subject: 'Sua assinatura foi suspensa',
+    content: 'Lamentamos informar que não foi possível processar o seu último pagamento. Para continuar a usufruir do serviço, pedimos que atualize os seus dados de faturação e cartão de crédito o mais rapidamente possível.',
+    buttonText: 'Atualizar Dados',
+    isPhishing: true,
+    redFlags: [
+      'Remetente @gmail.com em vez de um domínio oficial da Netflix.',
+      'Pedido direto de dados de cartão de crédito.',
+      'Tom alarmista sobre a suspensão do serviço.'
+    ],
+    explanation: 'Empresas grandes como a Netflix usam domínios próprios, nunca contas de e-mail gratuitas como Gmail ou Outlook para comunicações oficiais de faturação.'
+  },
+  {
+    id: 5,
+    type: 'whatsapp',
+    sender: 'Amigo',
+    subject: 'Mensagem',
+    content: 'Mano, encontraram isto sobre ti na net! Fiquei chocado: ver_video_privado.zip',
+    buttonText: 'Download',
+    isPhishing: true,
+    redFlags: [
+      'Envio de ficheiros executáveis ou comprimidos (.zip, .exe) sem contexto.',
+      'Curiosidade mórbida ("vê este vídeo sobre ti").',
+      'Linguagem que pode não corresponder à forma habitual do teu amigo falar.'
+    ],
+    explanation: 'Vírus e malware costumam ser enviados assim por contas de amigos que foram pirateadas. Nunca abras ficheiros estranhos.'
+  }
+];
+
+interface PhishingSimulatorProps {
+  onComplete?: (score: number, total: number) => void;
+}
+
+export const PhishingSimulator: React.FC<PhishingSimulatorProps> = ({ onComplete }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [userChoice, setUserChoice] = useState<boolean | null>(null);
+  const [isFinished, setIsFinished] = useState(false);
+
+  const scenario = phishingScenarios[currentIndex];
+
+  const handleDecision = (choice: boolean) => {
+    setUserChoice(choice);
+    setShowFeedback(true);
+    if (choice === scenario.isPhishing) {
+      setScore(s => s + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < phishingScenarios.length - 1) {
+      setCurrentIndex(c => c + 1);
+      setShowFeedback(false);
+      setUserChoice(null);
+    } else {
+      setIsFinished(true);
+      if (onComplete) {
+        onComplete(score + (userChoice === scenario.isPhishing ? 1 : 0), phishingScenarios.length);
+      }
+    }
+  };
+
+  if (isFinished) {
+    return (
+      <div className="bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-teal-500">
+        <h3 className="text-2xl font-bold text-teal-700 mb-4">Treino de Phishing Concluído!</h3>
+        <p className="text-4xl font-black text-teal-600 mb-4">
+          {score} / {phishingScenarios.length}
+        </p>
+        <p className="text-gray-600 mb-6">
+          {score === phishingScenarios.length 
+            ? "Incrível! És um mestre a detetar ameaças online." 
+            : score >= phishingScenarios.length / 2 
+            ? "Bom trabalho! Mas continua atento aos detalhes suspeitos." 
+            : "Precisas de ter mais cuidado. Revê os sinais de alerta!"}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-bold text-teal-800">Simulador de Phishing</h3>
+        <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-bold">
+          Caso {currentIndex + 1} de {phishingScenarios.length}
+        </span>
+      </div>
+
+      <div className="mb-8 overflow-hidden rounded-lg border border-gray-200">
+        {/* Simulating UI of the message app */}
+        <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 flex items-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-red-400"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+          <div className="w-3 h-3 rounded-full bg-green-400"></div>
+          <span className="text-xs text-gray-500 font-mono ml-4">
+            {scenario.type === 'email' ? '📨 Nova Mensagem' : scenario.type === 'sms' ? '📱 Mensagem de Texto' : '💬 WhatsApp'}
+          </span>
+        </div>
+        
+        <div className="p-4 bg-white">
+          <div className="mb-4">
+            <p className="text-xs text-gray-400 uppercase font-bold">De:</p>
+            <p className="font-mono text-sm break-all">{scenario.sender}</p>
+          </div>
+          <div className="mb-4">
+            <p className="text-xs text-gray-400 uppercase font-bold">Assunto:</p>
+            <p className="font-bold text-gray-800">{scenario.subject}</p>
+          </div>
+          <div className="p-4 bg-gray-50 rounded border border-gray-100 text-gray-700 italic mb-4">
+            {scenario.content}
+          </div>
+          <div className="flex justify-center">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-bold shadow-sm pointer-events-none opacity-80">
+              {scenario.buttonText}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {!showFeedback ? (
+        <div className="grid grid-cols-2 gap-4">
+          <button 
+            onClick={() => handleDecision(false)}
+            className="flex flex-col items-center justify-center p-4 border-2 border-emerald-500 rounded-xl hover:bg-emerald-50 transition-colors group"
+          >
+            <span className="text-2xl mb-1">✅</span>
+            <span className="font-bold text-emerald-700">Parece Seguro</span>
+          </button>
+          <button 
+            onClick={() => handleDecision(true)}
+            className="flex flex-col items-center justify-center p-4 border-2 border-red-500 rounded-xl hover:bg-red-50 transition-colors group"
+          >
+            <span className="text-2xl mb-1">🚨</span>
+            <span className="font-bold text-red-700">É Phishing!</span>
+          </button>
+        </div>
+      ) : (
+        <div className={`p-6 rounded-xl animate-in fade-in slide-in-from-bottom-4 duration-500 ${userChoice === scenario.isPhishing ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className="flex items-start space-x-3 mb-4">
+            <div className={`p-2 rounded-full ${userChoice === scenario.isPhishing ? 'bg-emerald-500' : 'bg-red-500'} text-white`}>
+              {userChoice === scenario.isPhishing ? '✓' : '✗'}
+            </div>
+            <div>
+              <h4 className={`font-bold text-lg ${userChoice === scenario.isPhishing ? 'text-emerald-800' : 'text-red-800'}`}>
+                {userChoice === scenario.isPhishing ? 'Boa! Estás atento.' : 'Cuidado! Caíste na armadilha.'}
+              </h4>
+              <p className="text-gray-700 mt-1">{scenario.explanation}</p>
+            </div>
+          </div>
+
+          {scenario.redFlags.length > 0 && (
+            <div className="mb-4">
+              <p className="font-bold text-gray-800 mb-2">🚩 Sinais de Alerta:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
+                {scenario.redFlags.map((flag, i) => <li key={i}>{flag}</li>)}
+              </ul>
+            </div>
+          )}
+
+          <button 
+            onClick={handleNext}
+            className="w-full py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            {currentIndex < phishingScenarios.length - 1 ? 'Próximo Caso' : 'Ver Resultado Final'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const questions = [
   { pair: ['F0rt3!#', 'cavalo-amarelo-corre-no-campo'], strongerIndex: 1, explanation: 'O comprimento é um dos fatores mais importantes. Uma frase longa (passphrase) é muitas vezes mais segura do que uma palavra curta e complexa.' },

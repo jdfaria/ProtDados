@@ -13,6 +13,7 @@ import ActivityPersonalData from './components/ActivityPersonalData';
 import ActivitySpotTheRisk from './components/ActivitySpotTheRisk';
 import ActivityPasswordMatcher from './components/ActivityPasswordMatcher';
 import ActivityPasswordQuiz from './components/ActivityPasswordQuiz';
+import ActivityPhishingSimulator from './components/ActivityPhishingSimulator';
 import Certificate from './components/Certificate';
 
 const sectionComponents = [
@@ -20,6 +21,7 @@ const sectionComponents = [
   ActivityPersonalData,
   OnlineProtectionTips,
   ActivitySpotTheRisk,
+  ActivityPhishingSimulator,
   PasswordGuide,
   PasswordCreator,
   PasswordChecker,
@@ -29,7 +31,7 @@ const sectionComponents = [
   Certificate,
 ];
 
-const activityIndices = [1, 3, 8, 9];
+const activityIndices = [1, 3, 4, 9, 10];
 
 type Scores = { [key: number]: { score: number; total: number } };
 
