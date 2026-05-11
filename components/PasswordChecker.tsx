@@ -23,7 +23,7 @@ const PasswordChecker: React.FC = () => {
 
     useEffect(() => {
         const newStrength = {
-            length: password.length >= 9,
+            length: password.length >= 12,
             lowercase: /[a-z]/.test(password),
             uppercase: /[A-Z]/.test(password),
             number: /\d/.test(password),
@@ -70,7 +70,7 @@ const PasswordChecker: React.FC = () => {
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                     <ul className="space-y-2 font-medium">
-                        <StrengthCriterion met={strength.length} text="Pelo menos 9 caracteres" />
+                        <StrengthCriterion met={strength.length} text="Pelo menos 12 caracteres" />
                         <StrengthCriterion met={strength.lowercase} text="Letra minúscula (a-z)" />
                         <StrengthCriterion met={strength.uppercase} text="Letra maiúscula (A-Z)" />
                         <StrengthCriterion met={strength.number} text="Número (0-9)" />

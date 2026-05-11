@@ -15,7 +15,7 @@ const PasswordGuide: React.FC = () => {
           <div className="text-center mb-6">
             <h3 className="text-xl font-bold text-teal-700">Requisitos de uma Palavra-Passe Segura</h3>
             <p className="mt-2 text-gray-600">
-              Deve ter, no mínimo, <strong className="text-red-600 text-2xl font-bold">9 caracteres</strong> e incluir os seguintes tipos:
+              Deve ter, no mínimo, <strong className="text-red-600 text-2xl font-bold">12 caracteres</strong> e incluir os seguintes tipos:
             </p>
           </div>
           
