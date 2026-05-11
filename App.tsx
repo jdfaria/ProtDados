@@ -4,6 +4,8 @@ import Header from './components/Header';
 import Introduction from './components/Introduction';
 import OnlineProtectionTips from './components/OnlineProtectionTips';
 import TwoFactorAuth from './components/TwoFactorAuth';
+import SocialMediaTips from './components/SocialMediaTips';
+import AIPrivacyAssistant from './components/AIPrivacyAssistant';
 import PasswordGuide from './components/PasswordGuide';
 import PasswordCreator from './components/PasswordCreator';
 import PasswordChecker from './components/PasswordChecker';
@@ -15,6 +17,8 @@ import ActivitySpotTheRisk from './components/ActivitySpotTheRisk';
 import ActivityPasswordMatcher from './components/ActivityPasswordMatcher';
 import ActivityPasswordQuiz from './components/ActivityPasswordQuiz';
 import ActivityPhishingSimulator from './components/ActivityPhishingSimulator';
+import ActivityTwoFactor from './components/ActivityTwoFactor';
+import ActivitySocialMedia from './components/ActivitySocialMedia';
 import Certificate from './components/Certificate';
 
 const sectionComponents = [
@@ -22,6 +26,10 @@ const sectionComponents = [
   ActivityPersonalData,
   OnlineProtectionTips,
   TwoFactorAuth,
+  ActivityTwoFactor,
+  SocialMediaTips,
+  ActivitySocialMedia,
+  AIPrivacyAssistant,
   ActivitySpotTheRisk,
   ActivityPhishingSimulator,
   PasswordGuide,
@@ -33,7 +41,7 @@ const sectionComponents = [
   Certificate,
 ];
 
-const activityIndices = [1, 4, 5, 10, 11];
+const activityIndices = [1, 4, 6, 8, 9, 14, 15];
 
 type Scores = { [key: number]: { score: number; total: number } };
 
@@ -77,7 +85,8 @@ const App: React.FC = () => {
   const isActivityCompleted = completedActivities.has(currentSectionIndex);
 
   const isNextDisabled = isCurrentSectionActivity && !isActivityCompleted;
-  const isPrevDisabled = isCurrentSectionActivity && !isActivityCompleted;
+  // Previously: const isPrevDisabled = isCurrentSectionActivity && !isActivityCompleted;
+  const isPrevDisabled = false;
 
   const totalScore = Object.values(scores).reduce((acc, s) => acc + s.score, 0);
   const totalPossible = Object.values(scores).reduce((acc, s) => acc + s.total, 0);

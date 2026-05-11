@@ -1,6 +1,7 @@
 
 import React, { useState, useReducer, useEffect, useRef } from 'react';
 import { RefreshCwIcon } from './icons';
+import { ShieldCheck, Smartphone, CheckCircle, Image as ImageIcon } from 'lucide-react';
 
 // --- Activity 1: Personal Data Quiz ---
 
@@ -577,6 +578,367 @@ export const PhishingSimulator: React.FC<PhishingSimulatorProps> = ({ onComplete
             className="w-full py-3 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700 transition-colors"
           >
             {currentIndex < phishingScenarios.length - 1 ? 'Próximo Caso' : 'Ver Resultado Final'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Activity 6: Two-Factor Authentication Simulator ---
+
+interface TwoFactorSimulatorProps {
+  onComplete?: (score: number, total: number) => void;
+}
+
+export const TwoFactorSimulator: React.FC<TwoFactorSimulatorProps> = ({ onComplete }) => {
+  const [step, setStep] = useState<'intro' | 'setup' | 'verify' | 'login' | 'success'>('intro');
+  const [method, setMethod] = useState<'sms' | 'app' | null>(null);
+  const [code, setCode] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [error, setError] = useState(false);
+  const [isSetup, setIsSetup] = useState(false);
+
+  const startSetup = (m: 'sms' | 'app') => {
+    setMethod(m);
+    setStep('setup');
+    // Generate a random 6-digit code for the simulation
+    setGeneratedCode(Math.floor(100000 + Math.random() * 900000).toString());
+  };
+
+  const verifyCode = () => {
+    if (code === generatedCode) {
+      setIsSetup(true);
+      setStep('success');
+      setError(false);
+      if (onComplete) onComplete(1, 1);
+    } else {
+      setError(true);
+    }
+  };
+
+  const resetActivity = () => {
+    setStep('intro');
+    setMethod(null);
+    setCode('');
+    setGeneratedCode('');
+    setError(false);
+    setIsSetup(false);
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 max-w-md mx-auto">
+      {step === 'intro' && (
+        <div className="text-center">
+          <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4 text-teal-600">
+            <ShieldCheck size={32} />
+          </div>
+          <h3 className="text-xl font-bold text-teal-800 mb-2">Simulador de 2FA</h3>
+          <p className="text-gray-600 mb-6">Vamos proteger a tua conta! Escolhe como queres receber os teus códigos de segurança.</p>
+          <div className="grid grid-cols-1 gap-3">
+            <button 
+              onClick={() => startSetup('sms')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all text-left flex items-center space-x-3"
+            >
+              <div className="p-2 bg-gray-100 rounded-lg text-gray-600"><Smartphone size={20} /></div>
+              <div>
+                <p className="font-bold">Via SMS</p>
+                <p className="text-xs text-gray-500">Enviamos um código para o teu telemóvel.</p>
+              </div>
+            </button>
+            <button 
+              onClick={() => startSetup('app')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all text-left flex items-center space-x-3"
+            >
+              <div className="p-2 bg-gray-100 rounded-lg text-gray-600"><ShieldCheck size={20} /></div>
+              <div>
+                <p className="font-bold">App de Autenticação</p>
+                <p className="text-xs text-gray-500">Google ou Microsoft Authenticator.</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 'setup' && (
+        <div className="text-center animate-in fade-in zoom-in duration-300">
+          <h3 className="font-bold text-lg mb-4">Configurar {method === 'sms' ? 'SMS' : 'App'}</h3>
+          {method === 'sms' ? (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">Introduz o teu número (simulado):</p>
+              <input 
+                type="text" 
+                placeholder="+351 9XX XXX XXX" 
+                className="w-full p-3 border rounded-lg text-center font-mono" 
+                readOnly 
+                value="+351 912 345 678"
+              />
+              <button 
+                onClick={() => setStep('verify')}
+                className="w-full py-3 bg-teal-600 text-white rounded-lg font-bold hover:bg-teal-700"
+              >
+                Enviar Código
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">Digitaliza o código QR com a tua App:</p>
+              <div className="w-32 h-32 bg-gray-200 mx-auto rounded-lg flex items-center justify-center border-4 border-white shadow-sm">
+                <div className="grid grid-cols-4 gap-1 p-2">
+                  {[...Array(16)].map((_, i) => (
+                    <div key={i} className={`w-4 h-4 ${Math.random() > 0.5 ? 'bg-black' : 'bg-transparent'}`}></div>
+                  ))}
+                </div>
+              </div>
+              <button 
+                onClick={() => setStep('verify')}
+                className="w-full py-3 bg-teal-600 text-white rounded-lg font-bold hover:bg-teal-700"
+              >
+                Li o Código QR
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {step === 'verify' && (
+        <div className="text-center animate-in slide-in-from-right duration-300">
+          <h3 className="font-bold text-lg mb-2">Verificar Dispositivo</h3>
+          <p className="text-sm text-gray-600 mb-6">
+            {method === 'sms' 
+              ? 'Recebeste um SMS! Escreve o código de 6 dígitos que viste no "teu telemóvel".' 
+              : 'Abre a tua App de Autenticação e escreve o código que lá aparece.'}
+          </p>
+          
+          <div className="bg-amber-50 p-4 rounded-xl border border-amber-100 mb-6 flex items-center justify-between">
+            <span className="text-xs font-bold text-amber-700 uppercase tracking-widest">Aviso de Simulação:</span>
+            <span className="font-mono text-lg font-bold text-amber-600">{generatedCode}</span>
+          </div>
+
+          <input 
+            type="text" 
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+            className={`w-full p-4 border-2 rounded-xl text-center text-2xl font-mono tracking-[0.5em] focus:outline-none transition-all ${error ? 'border-red-500 bg-red-50' : 'border-teal-200 focus:border-teal-500'}`}
+            placeholder="000000"
+          />
+          
+          {error && <p className="text-red-500 text-xs mt-2 font-bold">Código incorreto! Tenta novamente.</p>}
+
+          <button 
+            onClick={verifyCode}
+            className="w-full mt-6 py-3 bg-teal-600 text-white rounded-lg font-bold hover:bg-teal-700 shadow-md"
+          >
+            Ativar 2FA
+          </button>
+        </div>
+      )}
+
+      {step === 'success' && (
+        <div className="text-center animate-in fade-in duration-500">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
+            <CheckCircle size={32} />
+          </div>
+          <h3 className="text-xl font-bold text-emerald-800 mb-2">Proteção Ativada!</h3>
+          <p className="text-gray-600 mb-6">Sensacional! Agora a tua conta tem uma segunda camada de segurança obrigatória.</p>
+          <div className="p-4 bg-gray-50 rounded-xl text-left border border-gray-100 mb-6">
+            <p className="text-xs font-bold text-gray-400 uppercase mb-2">O que acontece agora?</p>
+            <p className="text-sm text-gray-700 italic leading-relaxed">
+              "Sempre que iniciares sessão num novo dispositivo, o sistema irá pedir-te a password E este código. Sem os dois, ninguém entra!"
+            </p>
+          </div>
+          <button 
+            onClick={resetActivity}
+            className="text-teal-600 text-sm font-bold hover:underline"
+          >
+            Experimentar outro método
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Activity 7: Social Media "Post or Ghost" ---
+
+const socialPosts = [
+  {
+    id: 1,
+    user: "Tiago_Gamer",
+    content: "Finalmente chegou o meu novo PC! 🖥️ Olhem só para esta máquina! #Gaming #Setup #NewPC",
+    imageUrl: "social_media_post_1.jpg",
+    imageDesc: "Setup de gaming com a janela aberta mostrando a rua e o número da porta.",
+    isSafe: false,
+    explanation: "Embora o PC seja fixe, a foto mostra a tua localização exata (número da porta e rua pela janela). Isso é perigoso!",
+    risk: "Exposição de Localização Física"
+  },
+  {
+    id: 2,
+    user: "Sara.Styles",
+    content: "Adoro este novo batom! O que acham da cor? 💄✨",
+    imageUrl: "social_media_post_2.jpg",
+    imageDesc: "Selfie de rosto com foco no batom, capturada num local público mas sem revelar dados sensíveis.",
+    isSafe: true,
+    explanation: "Boa! Uma selfie simples que não revela dados pessoais, documentos ou localização é segura para partilhar com amigos.",
+    risk: "Nenhum (Baixo Risco)"
+  },
+  {
+    id: 3,
+    user: "Rafa_07",
+    content: "Viagem de finalistas confirmada! Londres, aqui vamos nós! ✈️🇬🇧",
+    imageUrl: "social_media_post_3.jpg",
+    imageDesc: "Cartão de embarque com dados pessoais visíveis.",
+    isSafe: false,
+    explanation: "Nunca partilhes cartões de embarque! O QR Code contém todos os teus dados de viagem e fidelização, e podem ser usados para cancelar o teu voo ou roubar milhas.",
+    risk: "Roubo de Identidade / Dados de Viagem"
+  },
+  {
+    id: 4,
+    user: "Lara_Summer",
+    content: "A casa está tão silenciosa... Pais fora o fim de semana todo, festa na piscina só para mim! 🏊‍♀️⭐",
+    imageUrl: "social_media_post_4.jpg",
+    imageDesc: "Foto da casa/piscina que pode ser associada a estar sozinho em casa.",
+    isSafe: false,
+    explanation: "Anunciar que estás sozinho em casa é um convite para assaltos ou visitas indesejadas de estranhos que saibam onde moras.",
+    risk: "Segurança Física Residencial"
+  },
+  {
+    id: 5,
+    user: "Duarte_Bike",
+    content: "Treino de hoje concluído! 15km superados. 🚲💪",
+    imageUrl: "social_media_post_5.jpg",
+    imageDesc: "Percurso de treino que revela o local de residência.",
+    isSafe: false,
+    explanation: "Partilhar mapas de rotas que começam e terminam em tua casa revela o teu endereço e os teus hábitos de horários a desconhecidos.",
+    risk: "Stalking / Localização Precisa"
+  }
+];
+
+interface SocialMediaActivityProps {
+  onComplete?: (score: number, total: number) => void;
+}
+
+export const SocialMediaActivity: React.FC<SocialMediaActivityProps> = ({ onComplete }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [userChoice, setUserChoice] = useState<boolean | null>(null);
+  const [isFinished, setIsFinished] = useState(false);
+
+  const currentPost = socialPosts[currentIndex];
+
+  const handleDecision = (choice: boolean) => {
+    setUserChoice(choice);
+    setShowFeedback(true);
+    if (choice === currentPost.isSafe) {
+      setScore(s => s + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < socialPosts.length - 1) {
+      setCurrentIndex(c => c + 1);
+      setShowFeedback(false);
+      setUserChoice(null);
+    } else {
+      setIsFinished(true);
+      if (onComplete) {
+        onComplete(score + (userChoice === currentPost.isSafe ? 1 : 0), socialPosts.length);
+      }
+    }
+  };
+
+  if (isFinished) {
+    return (
+      <div className="bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-indigo-500">
+        <h3 className="text-2xl font-bold text-indigo-700 mb-4">Análise de Redes Sociais Concluída!</h3>
+        <p className="text-4xl font-black text-indigo-600 mb-4">
+          {score} / {socialPosts.length}
+        </p>
+        <p className="text-gray-600 mb-6">
+          {score === socialPosts.length 
+            ? "Mestre da Privacidade! Sabes perfeitamente o que deve ficar fora da rede." 
+            : score >= socialPosts.length / 2 
+            ? "Bom senso! Mas lembra-te que os piratas procuram detalhes escondidos nas fotos." 
+            : "Muito cuidado! Estás a partilhar informação a mais. Revê as tuas definições."}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-100 max-w-md mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-bold text-indigo-800">Partilhar ou Ignorar?</h3>
+        <span className="text-xs font-bold bg-indigo-100 text-indigo-600 px-2 py-1 rounded">
+          {currentIndex + 1} / {socialPosts.length}
+        </span>
+      </div>
+
+      <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200 mb-6">
+        <div className="p-3 bg-white border-b border-gray-100 flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600"></div>
+          <div>
+            <p className="text-xs font-bold text-gray-900">@{currentPost.user}</p>
+            <p className="text-[10px] text-gray-500">Publicado há 2 min</p>
+          </div>
+        </div>
+        
+        <div className="aspect-square bg-gray-200 relative">
+            <img 
+              src={currentPost.imageUrl} 
+              alt="Social Media Post" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm p-2 rounded text-[8px] text-white max-w-[150px]">
+                <p className="italic">{currentPost.imageDesc}</p>
+            </div>
+        </div>
+
+        <div className="p-3 bg-white">
+          <p className="text-sm text-gray-800 mb-3">{currentPost.content}</p>
+          <div className="flex space-x-3 text-gray-400 transition-colors">
+            <span className="text-xs flex items-center">❤️ 24</span>
+            <span className="text-xs flex items-center">💬 3</span>
+            <span className="text-xs flex items-center">🚀</span>
+          </div>
+        </div>
+      </div>
+
+      {!showFeedback ? (
+        <div className="grid grid-cols-2 gap-3">
+          <button 
+            onClick={() => handleDecision(true)}
+            className="py-3 bg-emerald-500 text-white rounded-lg font-bold hover:bg-emerald-600 transition-transform active:scale-95 flex items-center justify-center space-x-2"
+          >
+            <span>✅ Partilhar</span>
+          </button>
+          <button 
+            onClick={() => handleDecision(false)}
+            className="py-3 bg-rose-500 text-white rounded-lg font-bold hover:bg-rose-600 transition-transform active:scale-95 flex items-center justify-center space-x-2"
+          >
+            <span>🛑 Ignorar</span>
+          </button>
+        </div>
+      ) : (
+        <div className={`p-4 rounded-xl animate-in slide-in-from-bottom-2 duration-300 ${userChoice === currentPost.isSafe ? 'bg-emerald-50 border border-emerald-100' : 'bg-rose-50 border border-rose-100'}`}>
+          <p className={`font-bold mb-1 ${userChoice === currentPost.isSafe ? 'text-emerald-700' : 'text-rose-700'}`}>
+            {userChoice === currentPost.isSafe ? "✓ Decisão Correta!" : "✗ Uh-oh... Má ideia."}
+          </p>
+          <p className="text-xs text-gray-700 leading-relaxed mb-4">{currentPost.explanation}</p>
+          {!currentPost.isSafe && (
+             <div className="mb-4 bg-white/50 p-2 rounded text-[10px]">
+                <p className="font-bold text-rose-600 uppercase tracking-tighter">Risco Identificado:</p>
+                <p className="text-gray-600">{currentPost.risk}</p>
+             </div>
+          )}
+          <button 
+            onClick={handleNext}
+            className="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-700"
+          >
+            {currentIndex < socialPosts.length - 1 ? 'Seguinte' : 'Finalizar Atividade'}
           </button>
         </div>
       )}
