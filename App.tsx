@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Introduction from './components/Introduction';
 import OnlineProtectionTips from './components/OnlineProtectionTips';
+import TwoFactorAuth from './components/TwoFactorAuth';
 import PasswordGuide from './components/PasswordGuide';
 import PasswordCreator from './components/PasswordCreator';
 import PasswordChecker from './components/PasswordChecker';
@@ -20,6 +21,7 @@ const sectionComponents = [
   Introduction,
   ActivityPersonalData,
   OnlineProtectionTips,
+  TwoFactorAuth,
   ActivitySpotTheRisk,
   ActivityPhishingSimulator,
   PasswordGuide,
@@ -31,7 +33,7 @@ const sectionComponents = [
   Certificate,
 ];
 
-const activityIndices = [1, 3, 4, 9, 10];
+const activityIndices = [1, 4, 5, 10, 11];
 
 type Scores = { [key: number]: { score: number; total: number } };
 
@@ -83,6 +85,25 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-amber-50 font-sans text-gray-800 pb-32">
       <Header />
+      
+      {/* Barra de Progresso Geral */}
+      {!isFinalPage && (
+        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-sm border-b border-teal-100 shadow-sm">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex justify-between items-center mb-1 text-xs font-bold text-teal-700 uppercase tracking-wider">
+              <span>O teu percurso</span>
+              <span>{Math.round((currentSectionIndex / (sectionComponents.length - 1)) * 100)}%</span>
+            </div>
+            <div className="w-full bg-teal-100 rounded-full h-2 overflow-hidden shadow-inner">
+              <div 
+                className="bg-gradient-to-r from-teal-500 to-emerald-400 h-full transition-all duration-700 ease-out" 
+                style={{ width: `${(currentSectionIndex / (sectionComponents.length - 1)) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto px-4 py-8 md:py-12">
         {isCurrentSectionActivity
           ? React.createElement(
