@@ -39,8 +39,12 @@ const AIPrivacyAssistant: React.FC = () => {
     try {
       const response = await askPrivacyAssistant(userMessage);
       setMessages(prev => [...prev, { role: 'assistant', content: response || 'Não recebi uma resposta válida.' }]);
-    } catch (err) {
-      setError('Ocorreu um erro ao processar a tua pergunta. Verifica a tua ligação.');
+    } catch (err: any) {
+      if (err.message?.includes('API key')) {
+        setError('Configuração incompleta: Falta a chave de API (VITE_GEMINI_API_KEY) para o assistente funcionar no GitHub.');
+      } else {
+        setError('Ocorreu um erro ao processar a tua pergunta. Verifica a tua ligação.');
+      }
       console.error(err);
     } finally {
       setIsLoading(false);

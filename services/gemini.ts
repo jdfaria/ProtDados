@@ -2,20 +2,29 @@ import { GoogleGenAI } from "@google/genai";
 
 const getApiKey = () => {
   try {
-    // In Vite/Browser, process might not be defined
+    // Priority 1: Vite environment variable (recommended for GitHub/Vercel)
+    if (import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) {
+      return import.meta.env.VITE_GEMINI_API_KEY;
+    }
+    // Priority 2: Node process environment (common in AI Studio)
     if (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) {
       return process.env.GEMINI_API_KEY;
     }
-    // Fallback to empty string
     return "";
   } catch (e) {
     return "";
   }
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
-
 export async function askPrivacyAssistant(question: string) {
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error("API key missing. Configura VITE_GEMINI_API_KEY no teu ambiente.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
