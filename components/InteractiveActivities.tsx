@@ -3,6 +3,8 @@ import React, { useState, useReducer, useEffect, useRef } from 'react';
 import { RefreshCwIcon } from './icons';
 import { ShieldCheck, Smartphone, CheckCircle, Image as ImageIcon } from 'lucide-react';
 
+import poolImage from '../src/assets/images/regenerated_image_1778614321476.png';
+
 // --- Activity 1: Personal Data Quiz ---
 
 const initialItems = [
@@ -797,7 +799,7 @@ const socialPosts = [
     id: 4,
     user: "Lara_Summer",
     content: "A casa está tão silenciosa... Pais fora o fim de semana todo, festa na piscina só para mim! 🏊‍♀️⭐",
-    imageUrl: "social_media_post_4.jpg",
+    imageUrl: poolImage,
     imageDesc: "Foto da casa/piscina que pode ser associada a estar sozinho em casa.",
     isSafe: false,
     explanation: "Anunciar que estás sozinho em casa é um convite para assaltos ou visitas indesejadas de estranhos que saibam onde moras.",

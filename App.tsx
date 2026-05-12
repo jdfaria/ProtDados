@@ -5,6 +5,7 @@ import Introduction from './components/Introduction';
 import OnlineProtectionTips from './components/OnlineProtectionTips';
 import TwoFactorAuth from './components/TwoFactorAuth';
 import SocialMediaTips from './components/SocialMediaTips';
+import FakeNewsTips from './components/FakeNewsTips';
 import PasswordGuide from './components/PasswordGuide';
 import PasswordCreator from './components/PasswordCreator';
 import PasswordChecker from './components/PasswordChecker';
@@ -12,6 +13,7 @@ import PasswordPitfalls from './components/PasswordPitfalls';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import ActivityPersonalData from './components/ActivityPersonalData';
+import ActivityFakeNews from './components/ActivityFakeNews';
 import ActivitySpotTheRisk from './components/ActivitySpotTheRisk';
 import ActivityPasswordMatcher from './components/ActivityPasswordMatcher';
 import ActivityPasswordQuiz from './components/ActivityPasswordQuiz';
@@ -28,6 +30,8 @@ const sectionComponents = [
   ActivityTwoFactor,
   SocialMediaTips,
   ActivitySocialMedia,
+  FakeNewsTips,
+  ActivityFakeNews,
   ActivitySpotTheRisk,
   ActivityPhishingSimulator,
   PasswordGuide,
@@ -39,7 +43,7 @@ const sectionComponents = [
   Certificate,
 ];
 
-const activityIndices = [1, 4, 6, 7, 8, 13, 14];
+const activityIndices = [1, 4, 6, 8, 9, 10, 15, 16];
 
 type Scores = { [key: number]: { score: number; total: number } };
 
